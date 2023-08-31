@@ -29,7 +29,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 void setup() {
   Serial.begin(9600);
   lcd.backlight();
-  lcd.init();
+  lcd.begin();
   rtc.setTime(0, 52, 22, 9, 8, 2023);
 }
 
