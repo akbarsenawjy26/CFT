@@ -19,7 +19,7 @@ byte rowPins[ROWS] = {13, 12, 14, 27};
 byte colPins[COLS] = {26, 25, 33, 32};
 char key;
 int menu = 0, jumlahPakanPagi, jumlahPakanSiang, jumlahPakanSore, levelKurasHarian, levelKurasMingguan;
-String waktuPakanPagi, waktuPakanSiang, waktuPakanSore, waktuKurasHarian, waktuKurasMingguan, bacaWaktuPakanPagi;
+String waktuPakanPagi, waktuPakanSiang, waktuPakanSore, waktuKurasHarian, waktuKurasMingguan;
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 ESP32Time rtc(3600);
