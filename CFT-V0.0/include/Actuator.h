@@ -1,0 +1,1 @@
+const int valveMasuk = 23, valveKeluar = 19, buzzer = 2;
