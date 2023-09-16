@@ -6,7 +6,7 @@
 #include "Display.h"
 #include "Networks.h"
 
-byte task;
+byte task, hari = 0, i;
 
 // put function declarations here:
 void waktuSekarang();
@@ -16,6 +16,12 @@ void setup()
 {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  pinMode(buzzer, OUTPUT);
+  pinMode(valveMasuk, OUTPUT);
+  pinMode(valveKeluar, OUTPUT);
+  digitalWrite(valveMasuk, HIGH);
+  digitalWrite(valveKeluar, HIGH);
+
   rtc.setTime(40, 59, 23, 9, 8, 2023);
 
   myBot.wifiConnect(ssid, pass);
@@ -24,10 +30,6 @@ void setup()
   LCD.init();
   LCD.backlight();
 
-  pinMode(buzzer, OUTPUT);
-  pinMode(valveMasuk, OUTPUT);
-  pinMode(valveKeluar, OUTPUT);
-  int i = 0;
   for (i = 0; i < 5; i++)
   {
     digitalWrite(buzzer, HIGH);
@@ -46,9 +48,6 @@ void setup()
   {
     Serial.println("\ntestConnection NOK");
   }
-
-  digitalWrite(valveMasuk, HIGH);
-  digitalWrite(valveKeluar, HIGH);
 }
 
 void loop()
@@ -60,7 +59,7 @@ void loop()
     waktuSekarang();
     netwoksBot();
     LCD.setCursor(0, 1);
-    LCD.print("HST: " + String(hari) + String(" Hari"));
+    LCD.print("HST: " + String(hari) + " Hari");
 
     if (rtc.getTime() == "00:00:00")
     {
@@ -135,6 +134,12 @@ void loop()
       delay(10);
     }
     break;
+
+  case 4:
+    LCD.setCursor(0, 1);
+    LCD.print("Tinggi Air:" + String(hc.dist() - offset));
+    netwoksBot();
+    break;
   }
 }
 
@@ -144,4 +149,64 @@ void waktuSekarang()
   LCD.setCursor(0, 0);
   LCD.print(rtc.getTime("%a, %H:%M:%S"));
   delay(1000);
+}
+
+void netwoksBot()
+{
+  if (myBot.getNewMessage(msg))
+  {
+    if (msg.text.equalsIgnoreCase("/cekhari"))
+    {
+      myBot.sendMessage(msg.sender.id, "Total hari budidaya: " + String(hari));
+    }
+
+    if (msg.text.equalsIgnoreCase("/cekjamkuras"))
+    {
+      myBot.sendMessage(msg.sender.id, "Pengurasan Harian Pukul 08:00 WIB sebesar 10%");
+      myBot.sendMessage(msg.sender.id, "Pengurasan Mingguan Pukul 07:00 WIB sebesar 80%");
+    }
+
+    if (msg.text.equalsIgnoreCase("/cekjampakan"))
+    {
+      myBot.sendMessage(msg.sender.id, "Pemberian pakan sehari 3x pada jam 09:00 WIB, 15:00 WIB, 21:00 WIB, dan opsional untuk jam 03:00 WIB");
+    }
+
+    if (msg.text.equalsIgnoreCase("/kurasharian"))
+    {
+      LCD.clear();
+      LCD.setCursor(0, 0);
+      LCD.print("Perintah diterima!");
+      delay(1000);
+      LCD.clear();
+      task = 1;
+      delay(10);
+    }
+
+    if (msg.text.equalsIgnoreCase("/kurasmingguan"))
+    {
+      LCD.clear();
+      LCD.setCursor(0, 0);
+      LCD.print("Perintah diterima!");
+      delay(1000);
+      LCD.clear();
+      task = 2;
+      delay(10);
+    }
+
+    if (msg.text.equalsIgnoreCase("/pengukuran"))
+    {
+      myBot.sendMessage(msg.sender.id, "Masuk menu pengukuran");
+      LCD.clear();
+      task = 4;
+      delay(10);
+    }
+
+    if (msg.text.equalsIgnoreCase("/home"))
+    {
+      myBot.sendMessage(msg.sender.id, "Kembali ke home");
+      LCD.clear();
+      task = 0;
+      delay(10);
+    }
+  }
 }
